@@ -4,39 +4,35 @@ const User = require('../model/userModel')
 const sendToken = require('../utils/jwtToken')
 const jwt = require('jsonwebtoken');
 
-//Register a User
-exports.registerUser = catchAsyncError( async(req,res,next) => {
-    
-    const {name,email,password} = req.body
-    const user = await User.create({
-        name,email,password,
-    })
-
-    sendToken(user,201,res)
-})
-
 
 // Login User
 exports.loginUser = catchAsyncError(async (req, res, next) => {
-    const { name, password } = req.body;
-
-    if (!name || !password) {
-        return next(new ErrorHandler("Please Enter Name & Password", 400));
+    try {
+        
+        const { name, password } = req.body;
+        
+        if (!name || !password) {
+            return next(new ErrorHandler("Please Enter Name & Password", 400));
+        }
+        
+        const user = await User.findOne({ name });
+        
+        if (!user) {
+            return next(new ErrorHandler("Invalid Name & Password", 401));
+        }
+        
+        const isPasswordMatched = user.password === password;
+        
+        if (!isPasswordMatched) {
+            return next(new ErrorHandler("Invalid Name & Password", 401));
+        }
+        
+        sendToken(user, 200, res);
+    } catch (error) {
+        res.json({
+            message:"Enter name and password"
+        })
     }
-
-    const user = await User.findOne({ name });
-
-    if (!user) {
-        return next(new ErrorHandler("Invalid Name & Password", 401));
-    }
-
-    const isPasswordMatched = user.password === password;
-
-    if (!isPasswordMatched) {
-        return next(new ErrorHandler("Invalid Name & Password", 401));
-    }
-
-    sendToken(user, 200, res);
 });
 
 // Appointments
