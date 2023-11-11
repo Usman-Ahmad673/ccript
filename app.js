@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-// const cors = require('cors') 
+const cors = require('cors') 
 
 
 
@@ -11,7 +11,7 @@ const errMiddleware = require('./middleware/error')
 
 
 
-// app.use(cors());
+app.use(cors());
 app.use(express.json())
 app.use(bodyParser.json());
 app.use(cookieParser());
